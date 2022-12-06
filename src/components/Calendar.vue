@@ -45,7 +45,7 @@
                     <button class="extra-button" v-on:click="today(data)">Сегодня</button>
                 </div>
                 <div class="table" id="table"> 
-                    <div v-for="(day, index) in data.pole" :key="index">
+                    <div v-for="(day, index) in data.calendarData" :key="index">
                         <b-tooltip  v-if="flag"  :target="`${index}`" placement="auto" triggers="click">
                             <EventModal 
                                 v-on:addEvent="addEventHandler"
@@ -73,7 +73,6 @@
                             v-on:openModal="onOpenModalHandler"
                         />
                     </div>
-                  
                 </div>
             </div>
         </div>
@@ -86,7 +85,7 @@ import EventModal from '@/components/EventModal'
 import EventOverview from '@/components/EventOverview'
 import QuickEventModal from '@/components/QuickEventModal'
 import SearchListItem from '@/components/SearchListItem'
-import addPole from '@/helper'
+import addCalendarData from '@/helper'
 import crypt from '@/quickHelper'
 export default {
     props: ['data'],
@@ -98,107 +97,141 @@ export default {
         EventOverview
     },
     methods: {
-       
+        
+        /** Функция переключает на текущий месяц
+        *@param "data" - стейт
+        */
         today: function(data) {
-            data.month = new Date().getMonth()
-            data.year = new Date().getFullYear()
-            data.lastDay = new Date(data.year, data.month+1, 0).getDate()
-            data.pole = addPole(data.year, data.month)
+            data.month = new Date().getMonth();
+            data.year = new Date().getFullYear();
+            data.lastDay = new Date(data.year, data.month+1, 0).getDate();
+            data.calendarData = addCalendarData(data.year, data.month);
         },
 
+        /** Функция переключает на следующий месяц
+        *@param "data" - стейт
+        */
         increaseMonth: function(data) {
             data.month++;
             if (data.month > 11) {
                 data.month = -1;
                 data.month++;
                 data.year++;
-            }
-            data.firstDayName = new Date(data.year, data.month, 1).getDay()
-            data.lastDay = new Date(data.year, data.month+1, 0).getDate()
-            data.pole = addPole(data.year, data.month)
+            };
+            data.firstDayName = new Date(data.year, data.month, 1).getDay();
+            data.lastDay = new Date(data.year, data.month+1, 0).getDate();
+            data.calendarData = addCalendarData(data.year, data.month);
         },
-
+        
+        /** Функция переключает на предыдущий месяц
+        *@param "data" - стейт
+        */
         decreaseMonth: function(data) {
             data.month--;
             if (data.month < 0) {
                 data.month = 12;
                 data.month--;
                 data.year--;
-            }
-            data.firstDayName = new Date(data.year, data.month, 1).getDay()
-            data.lastDay = new Date(data.year, data.month+1, 0).getDate()
-            data.pole = addPole(data.year, data.month)
+            };
+            data.firstDayName = new Date(data.year, data.month, 1).getDay();
+            data.lastDay = new Date(data.year, data.month+1, 0).getDate();
+            data.calendarData = addCalendarData(data.year, data.month);
         },
 
+        // Функция обновляет страницу
         reload: function() {
             location.reload();
-            return false
+            return false;
         },
         
+        // Функция производит поиск и создаёт массив из которого строится список событий для поиска
         search: function() {
-            this.searchArray.splice(0, this.searchArray.length)
+            this.searchArray.splice(0, this.searchArray.length);
             this.data.event.forEach((item) => {
             if (item.name.slice(0, this.searchInput.length).toLowerCase() === this.searchInput.toLowerCase() || item.title.slice(0, this.searchInput.length).toLowerCase() === this.searchInput.toLowerCase()) {
                 this.searchArray.push(item)
             }});
         },
 
+        // Функция отвечает за открытие и закрытие модального окна для быстрого добавления событий
         quickModalHandler: function() {
-            this.quickFlag = !this.quickFlag
-            this.$root.$emit('bv::hide::tooltip')
+            this.quickFlag = !this.quickFlag;
+            this.$root.$emit('bv::hide::tooltip');
         },
 
+        /** Функция для быстрого добаления события. Записывает данные в LocalStorage
+        *@param "data" - стейт
+        */
         addQuickEventHandler: function(data) {
-            let quickData = crypt(data.quickString)
+            let quickData = crypt(data.quickString);
             let newObj = {id: quickData.dayId, title: quickData.title, name: quickData.name, description: ''};
             this.data.event.push(newObj);
+            localStorage.setItem('event', JSON.stringify(this.data.event));
             this.quickFlag = false;
         },
 
+        /** Функция определяет тип модального окна, который необходимо открыть и если это EventOverview,
+        * то записывает в input-ы имеющиеся данные
+        *@param "cellData" - данные полученные из ячейки при её открытии
+        */
         onOpenModalHandler: function(cellData) {
             this.flag = cellData.flag;
             this.overFlag = cellData.overFlag;
             this.cellTitle = cellData.cellTitle;
             this.cellDescription = cellData.cellDescription;
-            this.cellDay = cellData.cellDay
-            this.cellName = cellData.cellName
-            this.quickFlag = false
-            this.isActive = cellData.isActive
+            this.cellDay = cellData.cellDay;
+            this.cellName = cellData.cellName;
+            this.quickFlag = false;
+            this.isActive = cellData.isActive;
         },
 
+        /** Функция получает данные из компонента EventOverview и удаляет событие. Записывает данные в LocalStorage
+        *@param "eventData" - данные из компонента EventOverview 
+        */
         removeEventHandler: function(eventData) {
             const itemIndex = this.data.event.findIndex(element => element.id == eventData.id);
             this.data.event = [
                 ...this.data.event.slice(0, itemIndex),
                 ...this.data.event.slice(itemIndex + 1)
-            ]
-          
-            this.isActive = ''
+            ];
+            localStorage.setItem('event', JSON.stringify(this.data.event));
+            this.isActive = '';
         },
 
+        /** Функция получает данные из компонента EventModal и добавляет событие. Записывает данные в LocalStorage
+        *@param "eventData" - данные из компонента EventModal 
+        */
         addEventHandler: function(eventData) {
             let newObj = {id: this.cellDay, title: eventData.eventInput, description: eventData.textareaInput, name: eventData.nameInput};
             this.data.event.push(newObj);
-            this.quickFlag = false
-            this.isActive = ''
+            localStorage.setItem('event', JSON.stringify(this.data.event));
+            this.quickFlag = false;
+            this.isActive = '';
         },
 
+        /** Функция получает данные из компонента EventOverview и обновляет событие. Записывает данные в LocalStorage
+        *@param "eventData" - данные из компонента EventOverview 
+        */
         changeDescriptionHandler: function(eventData) {
-            console.log(eventData)
+            console.log(eventData);
             let newD = this.data.event.find(item => item.id == eventData.id);
             newD.description = eventData.newDescription;
             newD.title = eventData.newTitle;
-            newD.name = eventData.newName
-            this.isActive = ''
+            newD.name = eventData.newName;
+            localStorage.setItem('event', JSON.stringify(this.data.event));
+            this.isActive = '';
         },
 
+        /** Функция получает данные из компонента SearchListItem и переносит пользователя к выбранному событию
+        *@param "itemData" - данные из компонента SearchListItem 
+        */
         selectItemHandler: function(itemData) {
             let selectedDate = new Date(+itemData.id);
             this.data.month = selectedDate.getMonth();
             this.data.year = selectedDate.getFullYear();
-            this.data.pole = addPole(this.data.year, this.data.month)
-            this.isActive = +itemData.id
-        },
+            this.data.calendarData = addCalendarData(this.data.year, this.data.month);
+            this.isActive = +itemData.id;
+        }
     },
 
     data() {
@@ -214,7 +247,7 @@ export default {
             searchArray : [],
             focused: false,
             buttonPressed: false,
-            isActive: '',
+            isActive: ''
         }
     }
 }
@@ -355,9 +388,14 @@ input:focus {
     margin: 12px;
 }
 
-.extra-button:active {
+.extra-button:hover {
     color: white;
     background-color: #6B6B6B;
+}
+
+.extra-button:active {
+    color: white;
+    background-color: #CFCFCF;
 }
 
 .month-control {

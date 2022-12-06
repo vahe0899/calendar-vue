@@ -23,10 +23,13 @@ export default {
     },
     
     methods: {
+        // Функция отправляет данные для выполнения quickModalHandler
         closeQuickAdd: function() {
             this.$emit('quickModal')
         },
 
+        // Функция проверяет введённые данные на соответствие с формой записи и если всё совпадает, 
+        // то отправляет данные для выполнения addQuickEventHandler
         onSubmit: function() {
             if (this.quickInput == '') {
                 alert('Необходимо заполнить обязательные поля')

@@ -18,6 +18,8 @@
 export default {
     props: ['day', 'dayName', 'event', 'index', 'isActive'],
     methods: {
+        // Функция определяет какой вид модального окна открыть на выбранной ячейке, исходя из наличия заголовка
+        // далее отправляет данные для выполнения addEventHandler и закрывает окно
         eventAdd: function() {
             this.$root.$emit('bv::hide::tooltip')
             if (this.title) {
@@ -39,12 +41,9 @@ export default {
                 })
             }
         },
-
-        changeFlag: function() {
-            this.activeFlag = true
-        }
     },
     computed: {
+        // Функция отвечает за поиск имеющихся событий на данный день и определяет их заголовки
         title() {
             if (this.event.some(item => item.id == this.day.idEvent)) {
                 return this.event.find(item => item.id == this.day.idEvent).title
@@ -52,7 +51,8 @@ export default {
                 return ''
             }
         },
-
+        
+        // Функция отвечает за поиск имеющихся событий на данный день и определяет имена участников
         name() {
             if (this.event.some(item => item.id == this.day.idEvent)) {
                 return this.event.find(item => item.id == this.day.idEvent).name
@@ -61,6 +61,7 @@ export default {
             }
         },
 
+        // Функция отвечает за поиск имеющихся событий на данный день и определяет их описание
         description() {
             if (this.event.some(item => item.id == this.day.idEvent)) {
                 return this.event.find(item => item.id == this.day.idEvent).description
@@ -69,11 +70,6 @@ export default {
             }
         }
     },
-    data() {
-        return {
-            activeFlag: this.flag
-        }
-    }
 }
 </script>
 
@@ -127,10 +123,6 @@ export default {
 .cell:hover {
     background-color: #F4F4F4;
 }
-
-/* .cell:active {
-    box-shadow: 0px 0px 10px 2px #0271C7;
-} */
 
 .filled {
     background-color: #C2E4FE;

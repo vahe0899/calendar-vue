@@ -33,16 +33,19 @@
 export default {
     props: ['event', 'title', 'description', 'day', 'monthes', 'name'],
     methods: {
+
+        // Функция отвечает за открытие и закрытие модального окна EventOverview
         closeModal: function() {
             this.$root.$emit('bv::hide::tooltip')
-            this.$emit('remove', {})
         },
 
+        // Функция отправляет данные для выполнения removeEventHandler и закрывает окно
         removeEvent: function() {
             this.$emit('remove', {id: this.day.idEvent})
             this.$root.$emit('bv::hide::tooltip')
         },
 
+        // Функция отправляет данные для выполнения changeDescriptionHandler и закрывает окно
         onSubmit: function() {
             if (this.eventInput == '') {
                 this.$root.$emit('bv::hide::tooltip')

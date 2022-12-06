@@ -1,34 +1,36 @@
 <template>
-        <div class="event-add">
-            <div class="modal-close-button" v-on:click="closeModal()">
-                <img src="@/assets/cross.svg">
-            </div>
-            <form class="modal-input" @submit.prevent="onSubmit">
-                <input placeholder="Событие" v-model="eventInput" :class="{empty: this.inputFlag}">
-            </form>
-            <form class="modal-input" @submit.prevent="onSubmit">
-                <input placeholder="Имена участников" v-model="nameInput">
-            </form>
-            <form class="modal-textarea" @submit.prevent="onSubmit">
-                <textarea placeholder="Описание" v-model="textareaInput"></textarea>
-            </form>
-            <div class="modal-button">
-                <button class="extra-button" v-on:click="onSubmit()">Готово</button>      
-                <button class="extra-button" v-on:click="closeModal()">Удалить</button>                                          
-            </div>
+    <div class="event-add">
+        <div class="modal-close-button" v-on:click="closeModal()">
+            <img src="@/assets/cross.svg">
         </div>
-
+        <form class="modal-input" @submit.prevent="onSubmit">
+            <input placeholder="Событие" v-model="eventInput" :class="{empty: this.inputFlag}">
+        </form>
+        <form class="modal-input" @submit.prevent="onSubmit">
+            <input placeholder="Имена участников" v-model="nameInput">
+        </form>
+        <form class="modal-textarea" @submit.prevent="onSubmit">
+            <textarea placeholder="Описание" v-model="textareaInput"></textarea>
+        </form>
+        <div class="modal-button">
+            <button class="extra-button" v-on:click="onSubmit()">Готово</button>      
+            <button class="extra-button" v-on:click="closeModal()">Удалить</button>                                          
+        </div>
+    </div>
 </template>
 
 <script>
 export default {
     props: ['id'],
     methods: {
+
+        // Функция отвечает за открытие и закрытие модального окна EventModal
         closeModal: function() {
             this.$root.$emit('bv::hide::tooltip')
-            this.$emit('addEvent', {})
         },
 
+        // Функция проверяет заполненность обязательных полей 
+        // и отправляет данные для выполнения addEventHandler и закрывает окно
         onSubmit: function() {
             if (this.eventInput == '') {
                 alert('Необходимо заполнить обязательные поля')

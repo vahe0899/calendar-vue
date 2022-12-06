@@ -9,6 +9,7 @@
 export default {
     props: ['searchItem', 'event', 'monthes'],
     methods: {
+        //Функция отправляет данные для выполнения selectItemHandler
         selectItem: function() {
             this.$emit('selectItem', {id: this.searchItem.id})
         }
@@ -35,7 +36,6 @@ export default {
     overflow: auto;
     box-sizing: border-box;
     top: 35px;
-    /* visibility: hidden; */
 }
 
 .search-input > .search-list {
