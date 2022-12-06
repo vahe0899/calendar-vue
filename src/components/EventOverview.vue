@@ -36,6 +36,7 @@ export default {
 
         // Функция отвечает за открытие и закрытие модального окна EventOverview
         closeModal: function() {
+            this.$emit('isActive', {isActive: ''})
             this.$root.$emit('bv::hide::tooltip')
         },
 

@@ -27,6 +27,7 @@ export default {
         // Функция отвечает за открытие и закрытие модального окна EventModal
         closeModal: function() {
             this.$root.$emit('bv::hide::tooltip')
+            this.$emit('isActive', {isActive: ''})
         },
 
         // Функция проверяет заполненность обязательных полей 

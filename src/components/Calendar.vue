@@ -49,12 +49,14 @@
                         <b-tooltip  v-if="flag"  :target="`${index}`" placement="auto" triggers="click">
                             <EventModal 
                                 v-on:addEvent="addEventHandler"
+                                v-on:isActive="isActiveHandler"
                             />
                         </b-tooltip>
                         <b-tooltip  v-if="overFlag"  :target="`${index}`" placement="auto" triggers="click">
                             <EventOverview
                                 v-on:openModal="onOpenModalHandler"
                                 v-on:remove="removeEventHandler"
+                                v-on:isActive="isActiveHandler"
                                 v-on:changeDescription="changeDescriptionHandler"
                                 v-bind:event="data.event" 
                                 v-bind:title="cellTitle" 
@@ -106,6 +108,7 @@ export default {
             data.year = new Date().getFullYear();
             data.lastDay = new Date(data.year, data.month+1, 0).getDate();
             data.calendarData = addCalendarData(data.year, data.month);
+            this.$root.$emit('bv::hide::tooltip')
         },
 
         /** Функция переключает на следующий месяц
@@ -121,6 +124,7 @@ export default {
             data.firstDayName = new Date(data.year, data.month, 1).getDay();
             data.lastDay = new Date(data.year, data.month+1, 0).getDate();
             data.calendarData = addCalendarData(data.year, data.month);
+            this.$root.$emit('bv::hide::tooltip')
         },
         
         /** Функция переключает на предыдущий месяц
@@ -136,6 +140,7 @@ export default {
             data.firstDayName = new Date(data.year, data.month, 1).getDay();
             data.lastDay = new Date(data.year, data.month+1, 0).getDate();
             data.calendarData = addCalendarData(data.year, data.month);
+            this.$root.$emit('bv::hide::tooltip')
         },
 
         // Функция обновляет страницу
@@ -231,6 +236,14 @@ export default {
             this.data.year = selectedDate.getFullYear();
             this.data.calendarData = addCalendarData(this.data.year, this.data.month);
             this.isActive = +itemData.id;
+            this.$root.$emit('bv::hide::tooltip')
+        },
+
+         /** Функция получает данные из компонентов EventOverview или EventModal и отключает активную ячейку
+        *@param "data" - данные из компонента EventOverview или EventModal
+        */
+        isActiveHandler: function(data) {
+            this.isActive = data.isActive
         }
     },
 
