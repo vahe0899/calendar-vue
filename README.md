@@ -16,3 +16,5 @@
   ![6tG4U0S1hF](https://user-images.githubusercontent.com/108856788/205892931-25e90691-a11c-4d16-9a49-98eeef1d8054.gif)
 
 ## Все данные сохраняются в LocalStorage
+
+## Демо-версия проекта: https://calendar-vue-nu.vercel.app/
